@@ -1,30 +1,18 @@
 package com.tifd.projectcomposed
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,8 +38,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyScreen() {
     var nama by remember { mutableStateOf("") }
-    var jurusan by remember { mutableStateOf("") }
+    var NIM by remember { mutableStateOf("") }
     var sapaan by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,16 +87,16 @@ fun MyScreen() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Jurusan",
+                text = "NIM",
                 color = Color.Black,
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp)
             )
             TextField(
-                value = jurusan,
-                onValueChange = { jurusan = it },
-                label = { Text("Masukkan jurusanmu") },
+                value = NIM,
+                onValueChange = { NIM = it },
+                label = { Text("Masukkan NIM-Mu") },
                 modifier = Modifier.weight(2f)
             )
         }
@@ -120,13 +110,21 @@ fun MyScreen() {
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Tombol Submit
+        // Tombol Submit yang akan disable jika form kosong
         Button(
-            onClick = { sapaan = "Halo $nama dari jurusan $jurusan" },
+            onClick = { sapaan = "Halo $nama dengan NIM $NIM" },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Cyan,
+                containerColor = if (nama.isNotEmpty() && NIM.isNotEmpty()) Color.Cyan else Color.Gray,
                 contentColor = Color.DarkGray
-            )
+            ),
+            enabled = nama.isNotEmpty() && NIM.isNotEmpty(),
+            modifier = Modifier.pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = {
+                        Toast.makeText(context, "Nama: $nama, Jurusan: $NIM", Toast.LENGTH_LONG).show()
+                    }
+                )
+            }
         ) {
             Text("Submit")
         }
